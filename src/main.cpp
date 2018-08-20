@@ -61,8 +61,8 @@ bool collide(vector<double> point, vector<double> car_point, vector<double> old_
   //print(temp_s);
   //print(car_point[0]);
 
-  double front_distance = 5.0;//min_s
-  double back_distance = -2.0;//max_s
+  double front_distance = 10.0;//min_s
+  double back_distance = -10.0;//max_s
   double lane_width = 4.0;
 
   // If it is in the lane we are looking at.
@@ -313,10 +313,7 @@ int main() {
             bool too_close = false;
             double other_car_speed = 0.0;
             double dist_to_car = 0.0;
-
-            //double lane_width = 4.0;
-            //double distance_ahead = 10;
-            //double distance_behind = -10;
+            
             int num_lanes = 3;
             vector<bool> safe_lanes;// = {true, true, true};
             for (int j = 0; j < num_lanes; j++) {
@@ -359,7 +356,7 @@ int main() {
 
             bool try_lane_shift = false;
             if (too_close && ref_vel > other_car_speed) {
-              ref_vel -= 0.224 + 1 / dist_to_car;
+              ref_vel -= 0.224;
               if (ref_vel < other_car_speed) {
                 ref_vel = other_car_speed;
               }
@@ -392,16 +389,6 @@ int main() {
               }
               //print("");
               }
-
-
-          	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-            // Spline based system.
-
-            /*
-            if (prev_size > 0) {
-              car_s = end_path_s
-            }
-            */
 
             // List of widely spaced points.
             vector<double> ptsx;
@@ -451,21 +438,9 @@ int main() {
             }
 
             // Variables to decide the next waypoints.
-            int lane_d = 2.0 + 4.0 * lane;
+            int lane_d = 2.4 + 4.0 * lane;
             double step_size = 30.0;
             int num_waypoints = 3;
-            /*
-            for (int i = 0; i < num_waypoints; i++) {
-              vector<double> next_waypoint = getXY(car_s + step_size*i, lane_d,
-                                                   map_waypoints_s,
-                                                   map_waypoints_x,
-                                                   map_waypoints_y
-                                                 );
-              ptsx.push_back(next_waypoint[0]);
-              ptsy.push_back(next_waypoint[1]);
-            }
-            */
-            //vector<double> ref_s_d = getFrenet(ref_x, ref_y, ref_yaw, map_waypoints_x, map_waypoints_y);
             vector<double> next_wp0 = getXY(car_s + 30, (2.0 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
         		vector<double> next_wp1 = getXY(car_s + 60, (2.0 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
         		vector<double> next_wp2 = getXY(car_s + 90, (2.0 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
@@ -511,10 +486,6 @@ int main() {
             // Set points of the spline.
             s.set_points(ptsx, ptsy);
 
-            // Define the actual points to be used in the planner.
-            //vector<double> next_x_vals;
-            //vector<double> next_y_vals;
-
             // Start with all the previous path points from the last time.
             for (int i = 0; i < previous_path_x.size(); i++) {
               next_x_vals.push_back(previous_path_x[i]);
@@ -553,24 +524,6 @@ int main() {
               next_y_vals.push_back(y_point);
             }
 
-
-            /*
-            // First examples.
-            double dist_inc = 0.25;
-            double next_s, next_d;
-            double next_x, next_y;
-            for (int i = 0; i < 50; i++) {
-              next_s = car_s + (dist_inc * i + 1);
-              next_d = 6;
-              vector<double> xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-              next_x_vals.push_back(xy[0]);
-              next_y_vals.push_back(xy[1]);
-              // Straight line.
-              //next_x_vals.push_back(car_s + (dist_inc * i + 1) * cos(deg2rad(car_yaw)));
-              //next_y_vals.push_back(car_y + (dist_inc * i) * sin(deg2rad(car_yaw)));
-
-            }
-            */
             // END
             if (debug == true) {print(next_x_vals.size());}
           	msgJson["next_x"] = next_x_vals;
